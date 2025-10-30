@@ -8,6 +8,7 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
+import javafx.scene.image.Image;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.BorderPane;
 import javafx.stage.Modality;
@@ -54,7 +55,7 @@ public class MainApp extends Application {
 
         showPersonOverview();
 
-        System.out.println(getPersonData());
+        this.primaryStage.getIcons().add(new Image("file:src/main/resources/ch/makery/image/86957_address_book_icon.png"));
     }
 
     /**
@@ -112,7 +113,12 @@ public class MainApp extends Application {
 
             // Create the dialog Stage.
             Stage dialogStage = new Stage();
-            dialogStage.setTitle("Edit Person");
+            if (person.getFirstName() == null){
+                dialogStage.setTitle("Add New");
+            }else{
+                dialogStage.setTitle("Edit Person");
+            };
+
             dialogStage.initModality(Modality.WINDOW_MODAL);
             dialogStage.initOwner(primaryStage);
             Scene scene = new Scene(page);
