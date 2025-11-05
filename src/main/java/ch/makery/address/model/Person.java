@@ -14,6 +14,8 @@ public class Person {
     private final IntegerProperty postalCode;
     private final StringProperty city;
     private final ObjectProperty<LocalDate> birthday;
+    private final StringProperty phone;
+    private final StringProperty email;
 
     /**
      * Default constructor.
@@ -37,6 +39,8 @@ public class Person {
         this.postalCode = new SimpleIntegerProperty(1234);
         this.city = new SimpleStringProperty("some city");
         this.birthday = new SimpleObjectProperty<LocalDate>(LocalDate.of(1999, 2, 21));
+        this.phone = new SimpleStringProperty("+some phone number");
+        this.email = new SimpleStringProperty("some@ema.il");
     }
 
     public String getFirstName() {
@@ -70,35 +74,31 @@ public class Person {
     public String getStreet() {
         return street.get();
     }
-
     public void setStreet(String street) {
         this.street.set(street);
     }
-
     public StringProperty streetProperty() {
         return street;
     }
 
+
     public int getPostalCode() {
         return postalCode.get();
     }
-
     public void setPostalCode(int postalCode) {
         this.postalCode.set(postalCode);
     }
-
     public IntegerProperty postalCodeProperty() {
         return postalCode;
     }
 
+
     public String getCity() {
         return city.get();
     }
-
     public void setCity(String city) {
         this.city.set(city);
     }
-
     public StringProperty cityProperty() {
         return city;
     }
@@ -107,12 +107,18 @@ public class Person {
     public LocalDate getBirthday() {
         return birthday.get();
     }
-
     public void setBirthday(LocalDate birthday) {
         this.birthday.set(birthday);
     }
-
     public ObjectProperty<LocalDate> birthdayProperty() {
         return birthday;
     }
+
+    public String getPhone() { return  phone.get(); }
+    public void setPhone(String phone) { this.phone.set(phone); }
+    public StringProperty phoneProperty() { return phone; }
+
+    public String getEmail() { return email.get(); }
+    public void setEmail(String email) { this.email.set(email); }
+    public StringProperty emailProperty() { return email; }
 }

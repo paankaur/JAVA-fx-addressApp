@@ -96,7 +96,7 @@ public class RootLayoutController {
         Alert alert = new Alert(Alert.AlertType.INFORMATION);
         alert.setTitle("AddressApp");
         alert.setHeaderText("About");
-        alert.setContentText("Author: Marco Jakob\nWebsite: http://code.makery.ch");
+        alert.setContentText("Author: Bop");
 
         alert.showAndWait();
     }
@@ -114,5 +114,9 @@ public class RootLayoutController {
     @FXML
     private void handleShowBirthdayStatistics() {
         mainApp.showBirthdayStatistics();
+    }
+    @FXML
+    private void handleCityStatistics() {
+        mainApp.showCityStatistics();
     }
 }

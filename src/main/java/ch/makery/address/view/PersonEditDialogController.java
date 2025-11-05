@@ -27,6 +27,10 @@ public class PersonEditDialogController {
     private TextField cityField;
     @FXML
     private TextField birthdayField;
+    @FXML
+    private TextField phoneNumberField;
+    @FXML
+    private TextField emailField;
 
 
     private Stage dialogStage;
@@ -66,6 +70,8 @@ public class PersonEditDialogController {
         cityField.setText(person.getCity());
         birthdayField.setText(DateUtil.format(person.getBirthday()));
         birthdayField.setPromptText("dd.mm.yyyy");
+        phoneNumberField.setText(person.getPhone());
+        emailField.setText(person.getEmail());
     }
 
     /**
@@ -89,6 +95,8 @@ public class PersonEditDialogController {
             person.setPostalCode(Integer.parseInt(postalCodeField.getText()));
             person.setCity(cityField.getText());
             person.setBirthday(DateUtil.parse(birthdayField.getText()));
+            person.setPhone(phoneNumberField.getText());
+            person.setEmail(emailField.getText());
 
             okClicked = true;
             dialogStage.close();
@@ -110,6 +118,12 @@ public class PersonEditDialogController {
      */
     private boolean isInputValid() {
         String errorMessage = "";
+        if (phoneNumberField.getText() == null || (phoneNumberField.getText().charAt(0) != '+')) {
+        errorMessage += "Please enter a valid phone number!\n";
+        }
+        if (emailField.getText() == null || (emailField.getText().contains("@") && !emailField.getText().contains("."))) {
+            errorMessage += "Please enter a valid email!\n";
+        }
 
         if (firstNameField.getText() == null || firstNameField.getText().length() == 0) {
             errorMessage += "No valid first name!\n";
