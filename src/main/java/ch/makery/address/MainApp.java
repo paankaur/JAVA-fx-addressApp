@@ -2,6 +2,7 @@ package ch.makery.address;
 
 import ch.makery.address.model.Person;
 import ch.makery.address.model.PersonListWrapper;
+import ch.makery.address.util.PersonDataStorage;
 import ch.makery.address.view.*;
 import javafx.application.Application;
 import javafx.collections.FXCollections;
@@ -22,6 +23,7 @@ import jakarta.xml.bind.Marshaller;
 import jakarta.xml.bind.Unmarshaller;
 import java.io.File;
 import java.io.IOException;
+import java.util.List;
 import java.util.prefs.Preferences;
 
 public class MainApp extends Application {
@@ -29,6 +31,8 @@ public class MainApp extends Application {
     private Stage primaryStage;
     private BorderPane rootLayout;
     private ObservableList<Person> personData = FXCollections.observableArrayList();
+
+    private PersonDataStorage storage = new PersonDataStorage();
 
     /**
      * Constructor
@@ -167,13 +171,14 @@ public class MainApp extends Application {
      * @return
      */
     public File getPersonFilePath() {
-        Preferences prefs = Preferences.userNodeForPackage(MainApp.class);
-        String filePath = prefs.get("filePath", null);
-        if (filePath != null) {
-            return new File(filePath);
-        } else {
-            return null;
-        }
+//        Preferences prefs = Preferences.userNodeForPackage(MainApp.class);
+//        String filePath = prefs.get("filePath", null);
+//        if (filePath != null) {
+//            return new File(filePath);
+//        } else {
+//            return null;
+//        }
+        return storage.getPersonFilePath();
     }
 
     /**
@@ -183,16 +188,22 @@ public class MainApp extends Application {
      * @param file the file or null to remove the path
      */
     public void setPersonFilePath(File file) {
-        Preferences prefs = Preferences.userNodeForPackage(MainApp.class);
+//        Preferences prefs = Preferences.userNodeForPackage(MainApp.class);
+//        if (file != null) {
+//            prefs.put("filePath", file.getPath());
+//
+//            // Update the stage title.
+//            primaryStage.setTitle("AddressApp - " + file.getName());
+//        } else {
+//            prefs.remove("filePath");
+//
+//            // Update the stage title.
+//            primaryStage.setTitle("AddressApp");
+//        }
+        storage.setPersonFilePath(file);
         if (file != null) {
-            prefs.put("filePath", file.getPath());
-
-            // Update the stage title.
             primaryStage.setTitle("AddressApp - " + file.getName());
-        } else {
-            prefs.remove("filePath");
-
-            // Update the stage title.
+        }else {
             primaryStage.setTitle("AddressApp");
         }
     }
@@ -204,29 +215,49 @@ public class MainApp extends Application {
      * @param file
      */
     public void loadPersonDataFromFile(File file) {
+//        try {
+//            JAXBContext context = JAXBContext
+//                    .newInstance(PersonListWrapper.class);
+//            Unmarshaller um = context.createUnmarshaller();
+//
+//            // Reading XML from the file and unmarshalling.
+//            PersonListWrapper wrapper = (PersonListWrapper) um.unmarshal(file);
+//
+//            personData.clear();
+//            personData.addAll(wrapper.getPersons());
+//
+//            // Save the file path to the registry.
+//            setPersonFilePath(file);
+//
+//        } catch (Exception e) { // catches ANY exception
+//            Alert alert = new Alert(Alert.AlertType.ERROR);
+//            alert.setTitle("Error");
+//            alert.setHeaderText("Could not load data");
+//            alert.setContentText("Could not load data from file:\n" + file.getPath());
+//
+//            alert.showAndWait();
+//        }
         try {
-            JAXBContext context = JAXBContext
-                    .newInstance(PersonListWrapper.class);
-            Unmarshaller um = context.createUnmarshaller();
+            // 1. Let the storage class do the loading
+            List<Person> loadedPersons = storage.loadPersonDataFromFile(file);
 
-            // Reading XML from the file and unmarshalling.
-            PersonListWrapper wrapper = (PersonListWrapper) um.unmarshal(file);
-
+            // 2. Update the application's in-memory data
             personData.clear();
-            personData.addAll(wrapper.getPersons());
+            personData.addAll(loadedPersons);
 
-            // Save the file path to the registry.
+            // 3. Update the file path (which also updates the title)
             setPersonFilePath(file);
 
-        } catch (Exception e) { // catches ANY exception
+        } catch (Exception e) { // catches ANY exception from storage
+            // 4. Show an alert (This is UI logic)
             Alert alert = new Alert(Alert.AlertType.ERROR);
             alert.setTitle("Error");
             alert.setHeaderText("Could not load data");
-            alert.setContentText("Could not load data from file:\n" + file.getPath());
-
+            alert.setContentText("Could not load data from file:\n" + file.getPath() + "\n\nError: " + e.getMessage());
             alert.showAndWait();
         }
     }
+
 
     /**
      * Saves the current person data to the specified file.
@@ -234,27 +265,43 @@ public class MainApp extends Application {
      * @param file
      */
     public void savePersonDataToFile(File file) {
+//        try {
+//            JAXBContext context = JAXBContext
+//                    .newInstance(PersonListWrapper.class);
+//            Marshaller m = context.createMarshaller();
+//            m.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
+//
+//            // Wrapping our person data.
+//            PersonListWrapper wrapper = new PersonListWrapper();
+//            wrapper.setPersons(personData);
+//
+//            // Marshalling and saving XML to the file.
+//            m.marshal(wrapper, file);
+//
+//            // Save the file path to the registry.
+//            setPersonFilePath(file);
+//        } catch (Exception e) { // catches ANY exception
+//            Alert alert = new Alert(Alert.AlertType.ERROR);
+//            alert.setTitle("Error");
+//            alert.setHeaderText("Could not save data");
+//            alert.setContentText("Could not save data to file:\n" + file.getPath());
+//
+//            alert.showAndWait();
+//        }
+
         try {
-            JAXBContext context = JAXBContext
-                    .newInstance(PersonListWrapper.class);
-            Marshaller m = context.createMarshaller();
-            m.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
+            // 1. Let the storage class do the saving
+            storage.savePersonDataToFile(file, personData);
 
-            // Wrapping our person data.
-            PersonListWrapper wrapper = new PersonListWrapper();
-            wrapper.setPersons(personData);
-
-            // Marshalling and saving XML to the file.
-            m.marshal(wrapper, file);
-
-            // Save the file path to the registry.
+            // 2. Update the file path (which also updates the title)
             setPersonFilePath(file);
-        } catch (Exception e) { // catches ANY exception
+
+        } catch (Exception e) { // catches ANY exception from storage
+            // 3. Show an alert (This is UI logic)
             Alert alert = new Alert(Alert.AlertType.ERROR);
             alert.setTitle("Error");
             alert.setHeaderText("Could not save data");
-            alert.setContentText("Could not save data to file:\n" + file.getPath());
-
+            alert.setContentText("Could not save data to file:\n" + file.getPath() + "\n\nError: " + e.getMessage());
             alert.showAndWait();
         }
     }
